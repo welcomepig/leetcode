@@ -64,6 +64,13 @@
     return [string copy];
 }
 
++ (NSString *)serialize:(TreeNode*)root {
+    if (!root) return @"X";
+
+    return [NSString stringWithFormat:@"%ld,%@,%@",
+            root.value, [TreeNode serialize:root.left], [TreeNode serialize:root.right]];
+}
+
 +(TreeNode*)deserializeWithNodes:(NSMutableArray*)nodes
 {
     if (nodes.count == 0) {
