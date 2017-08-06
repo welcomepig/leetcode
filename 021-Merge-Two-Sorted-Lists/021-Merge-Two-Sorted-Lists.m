@@ -17,6 +17,7 @@
     self = [super init];
     if (self) {
         _value = value;
+        _next = nil;
     }
     return self;
 }
@@ -80,6 +81,28 @@
     return root;
 }
 
+#pragma mark - dummy node
+
++ (Node *)mergeSortedList2:(Node *)list1 list2:(Node *)list2 {
+    Node *root = [[Node alloc] initWithValue:0];
+    Node *node = root;
+    
+    while (list1 && list2) {
+        if (list1.value < list2.value) {
+            node.next = list1;
+            list1 = list1.next;
+        } else {
+            node.next = list2;
+            list2 = list2.next;
+        }
+        node = node.next;
+    }
+    
+    node.next = !list1 ? list2 : list1;
+    
+    return root.next;
+}
+
 @end
 
 int main(int argc, char * argv[]) {
@@ -95,5 +118,5 @@ int main(int argc, char * argv[]) {
     [list2 insert:16];
     [list2 insert:18];
     
-    NSLog(@"%@", [Node mergeSortedList:list1 list2:list2]);
+    NSLog(@"%@", [Node mergeSortedList2:list1 list2:list2]);
 }
