@@ -1,32 +1,27 @@
 #import <Foundation/Foundation.h>
-#import <stdio.h>
 
-@interface NSString (ValidParentheses)
+@interface NSString (IsValidParenthese)
 
--(BOOL)isValidParentheses;
+- (BOOL)isValidParenthese;
 
 @end
 
-@implementation NSString (ValidParentheses)
+@implementation NSString (IsValidParenthese)
 
--(BOOL)isValidParentheses
-{
+- (BOOL)isValidParenthese {
     NSMutableArray *stack = [NSMutableArray array];
+    NSDictionary *map = @{ @('(') : @(')'), @('[') : @(']'), @('{') : @('}') };
     
-    for (int i = 0;i < self.length; i++) {
-        char c = [self characterAtIndex:i];
+    for (NSUInteger i = 0;i < self.length; i++) {
+        char value = [self characterAtIndex:i];
         
-        if (c == '(' || c == '{' || c == '[') {
-            [stack addObject:@(c)];
-        } else if (c == ')' || c == '}' || c == ']') {
-            char lc = [[stack lastObject] charValue];
-            if ((lc == '(' && c == ')') || (lc == '[' && c == ']') || (lc == '{' && c == '}')) {
-                [stack removeLastObject];
-            } else {
+        if (value == '(' || value == '[' || value == '{') {
+            [stack addObject:map[@(value)]];
+        } else if (value == ')' || value == ']' || value == '}') {
+            if ([[stack lastObject] charValue] != value) {
                 return NO;
             }
-        } else {
-            return NO;
+            [stack removeLastObject];
         }
     }
     
@@ -35,11 +30,8 @@
 
 @end
 
-int main (int argc, const char * argv[])
-{
-    @autoreleasepool {
-        NSString *str = @"{}";
-        NSLog(@"%d", [str isValidParentheses]);
-    }
+int main(int argc, char * argv[]) {
+    NSString *s = @"(()";
+    NSLog(@"%d", [s isValidParenthese]);
 }
 
