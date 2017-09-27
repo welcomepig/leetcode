@@ -10,6 +10,8 @@
 
 @implementation NSArray (MaximumSizeSubarray)
 
+#pragma mark - O(n)
+
 -(NSArray*)minimumSizeSubarray:(NSInteger)target
 {
     NSInteger i, j, len, sum, mini, min = self.count + 1;
@@ -31,6 +33,8 @@
     
     return (min == self.count + 1) ? nil : [self subarrayWithRange:NSMakeRange(mini, min)];
 }
+
+#pragma mark - O(nlogn)
 
 -(NSArray*)minimumSizeSubarrayBSearch:(NSInteger)target
 {
@@ -66,6 +70,48 @@
             lo = mid + 1;
         } else {
             hi = mid - 1;
+        }
+    }
+
+    return lo;
+}
+
+#pragma mark - O(nlogn)
+
+- (NSUInteger)minSizeSubarraySumLogN:(NSInteger)s
+{
+    if (self.count == 0) return 0;
+        
+    NSMutableArray *tsums = [NSMutableArray array];
+    NSUInteger length = self.count + 2;
+    NSInteger i, j;
+    
+    tsums[0] = @(0);
+    for (i = 1;i <= self.count; i++) {
+        tsums[i] = @([tsums[i-1] integerValue] + [self[i-1] integerValue]);
+    }
+    NSArray *sums = [tsums copy];
+    
+    for (i = 0;i <= self.count; i++) {
+        j = [self binarySearch:sums target:([sums[i] integerValue] + s) lo:(i+1) hi:self.count];
+        if (j == self.count + 1) break;
+        length = MIN(j - i, length);
+    }
+    
+    return (length == self.count + 2) ? 0 : length;
+}
+
+- (NSInteger)binarySearch:(NSArray*)sums target:(NSInteger)target lo:(NSInteger)lo hi:(NSInteger)hi
+{
+    NSInteger mid;
+    
+    while (lo <= hi) {
+        mid = lo + (hi - lo) / 2;
+        
+        if ([sums[mid] integerValue] >= target) {
+            hi = mid - 1;
+        } else {
+            lo = mid + 1;
         }
     }
 
