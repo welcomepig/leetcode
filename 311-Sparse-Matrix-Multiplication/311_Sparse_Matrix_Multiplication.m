@@ -2,14 +2,14 @@
 
 @interface Matrix : NSObject
 
-- (NSInteger **)multiply:(NSInteger **)A ma:(NSUInteger)ma na:(NSUInteger)na 
++ (NSInteger **)multiply:(NSInteger **)A ma:(NSUInteger)ma na:(NSUInteger)na 
                        B:(NSInteger **)B mb:(NSUInteger)mb nb:(NSUInteger)nb;
 
 @end
 
 @implementation Matrix
 
-- (NSInteger **)multiply:(NSInteger **)A ma:(NSUInteger)ma na:(NSUInteger)na 
++ (NSInteger **)multiply:(NSInteger **)A ma:(NSUInteger)ma na:(NSUInteger)na 
                        B:(NSInteger **)B mb:(NSUInteger)mb nb:(NSUInteger)nb {
     if (na != mb) return nil;
     
@@ -40,4 +40,49 @@
 @end
 
 int main(int argc, char * argv[]) {
+    NSUInteger ma = 2;
+    NSUInteger na = 3;
+    NSUInteger mb = 3;
+    NSUInteger nb = 3;
+    
+    NSInteger **A = (NSInteger **)malloc(sizeof(NSInteger *) * ma);
+    
+    for (int i = 0;i < ma; i++) {
+        A[i] = (NSInteger *)malloc(sizeof(NSInteger) * na);
+    }
+    
+    A[0][0] = 1;
+    A[0][1] = 0;
+    A[0][2] = 0;
+    
+    A[1][0] = -1;
+    A[1][1] = 0;
+    A[1][2] = 3;
+    
+    NSInteger **B = (NSInteger **)malloc(sizeof(NSInteger *) * mb);
+    
+    for (int i = 0;i < mb; i++) {
+        B[i] = (NSInteger *)malloc(sizeof(NSInteger) * nb);
+    }
+    
+    B[0][0] = 7;
+    B[0][1] = 0;
+    B[0][2] = 0;
+    
+    B[1][0] = 0;
+    B[1][1] = 0;
+    B[1][2] = 0;
+    
+    B[2][0] = 0;
+    B[2][1] = 0;
+    B[2][2] = 1;
+    
+    NSInteger **C = [Matrix multiply:A ma:ma na:na B:B mb:mb nb:nb];
+    
+    for (int i = 0;i < ma; i++) {
+        for (int j = 0;j < nb; j++) {
+            NSLog(@"%ld ", C[i][j]);
+        }
+        NSLog(@"\n");
+    }
 }
