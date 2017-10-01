@@ -13,10 +13,10 @@
     NSMutableArray *subsets = [NSMutableArray array];
     NSInteger i, size, preSize = 0;
     id preObj = nil;
-    
-    [subsets addObject:@[]];
-    for (id obj in self) {
 
+    NSArray *sorted = [self sortedArrayUsingSelector:@selector(compare:)];
+    [subsets addObject:@[]];
+    for (id obj in sorted) {
         size = subsets.count;
         i = [obj isEqual:preObj] ? 0 : preSize; 
         for (;i < size; i++) {
