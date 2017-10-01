@@ -6,7 +6,9 @@
 @property (nonatomic, strong) Node *next;
 
 - (instancetype)initWithValue:(NSInteger)value;
++ (Node *)middle:(Node *)root;
 + (Node *)reverse:(Node *)root;
++ (BOOL)isPalindrome:(Node *)root;
 
 @end
 
