@@ -1,115 +1,59 @@
 #import <Foundation/Foundation.h>
-#import <stdio.h>
 
-@interface NSTreeNode : NSObject
+@interface Node : NSObject
 
-@property (nonatomic, assign) int value;
-@property (nonatomic, strong) NSTreeNode *left;
-@property (nonatomic, strong) NSTreeNode *right;
+@property (nonatomic, strong) Node *left;
+@property (nonatomic, strong) Node *right;
+@property (nonatomic, assign) NSInteger val;
 
-- (id)initWithValue:(int)value;
-- (void)insertNode:(int)value;
+- (instancetype)initWithValue:(NSInteger)value left:(Node*)left right:(Node*)right;
+- (instancetype)initWithValue:(NSInteger)value;
+- (NSArray<NSString*>*)pathes;
 
 @end
 
-@implementation NSTreeNode
+@implementation Node
 
-- (id)initWithValue:(int)value
+- (instancetype)initWithValue:(NSInteger)value left:(Node*)left right:(Node*)right
 {
     self = [super init];
     if (self) {
-        self.value = value;
-        self.left = nil;
-        self.right = nil;
-    }
-    return self;
-}
-    
-- (void)insertNode:(int)value
-{
-    if (value < self.value) {
-        if (self.left) {
-            [self.left insertNode:value];
-        } else {
-            NSTreeNode *node = [[NSTreeNode alloc] initWithValue:value];
-            self.left = node;
-        }
-    } else {
-        if (self.right) {
-            [self.right insertNode:value];
-        } else {
-            NSTreeNode *node = [[NSTreeNode alloc] initWithValue:value];
-            self.right = node;
-        }
-    }
-}
-    
-@end
-    
-@interface NSTree : NSObject
-
-@property (nonatomic, strong) NSTreeNode *root;
-
-- (void)insertNode:(int)value;
-+ (void)printPathToChild:(NSTreeNode *)node path:(NSString *)path;
-
-@end
-
-@implementation NSTree
-   
-- (id)init
-{
-    self = [super init];
-    if (self) {
-        self.root = nil;
+        _val = value;
+        _left = left;
+        _right = right;
     }
     return self;
 }
 
-- (void)insertNode:(int)value
+- (instancetype)initWithValue:(NSInteger)value
 {
-    if (self.root) {
-        [self.root insertNode:value];
-    } else {
-        NSTreeNode *node = [[NSTreeNode alloc] initWithValue:value];
-        self.root = node;
-    }
+    return [self initWithValue:value left:nil right:nil];
 }
 
-+ (void)printPathToChild:(NSTreeNode *)node path:(NSString *)path
+- (void)traverseWithPrefix:(NSString*)prefix result:(NSMutableArray*)result
 {
-    if (!node) {
+    if (!self.left && !self.right) {
+        [result addObject:[NSString stringWithFormat:@"%@%ld", prefix, self.val]];
         return;
     }
     
-    NSString *newPath = (path.length == 0) ? [NSString stringWithFormat:@"%d", node.value]
-                        : [NSString stringWithFormat:@"%@->%d", path, node.value];
-    
-    if (!node.left && !node.right) {
-        NSLog(@"%@", newPath);
-        return;
-    }
-    
-    if (node.left) {
-        [NSTree printPathToChild:node.left path:newPath];
-    }
-    
-    if (node.right) {
-        [NSTree printPathToChild:node.right path:newPath];
-    }
+    [self.left traverseWithPrefix:[NSString stringWithFormat:@"%@%ld->", prefix, self.val] result:result];
+    [self.right traverseWithPrefix:[NSString stringWithFormat:@"%@%ld->", prefix, self.val] result:result];
 }
-    
+
+- (NSArray<NSString*>*)pathes
+{
+    NSMutableArray *result = [NSMutableArray array];
+    [self traverseWithPrefix:@"" result:result];
+    return [result copy];
+}
+
 @end
-    
-int main (int argc, const char * argv[])
-{
-    @autoreleasepool {
-        NSTree *tree = [[NSTree alloc] init];
-        [tree insertNode:4];
-        [tree insertNode:2];
-        [tree insertNode:6];
-        [tree insertNode:1];
-        [NSTree printPathToChild:tree.root path:@""];
-    }
-}
 
+int main(int argc, char * argv[]) {
+    Node *node1 = [[Node alloc] initWithValue:1];
+    node1.left = [[Node alloc] initWithValue:2];
+    node1.right = [[Node alloc] initWithValue:3];
+    node1.left.right = [[Node alloc] initWithValue:5];
+    NSLog(@"%@", [node1 pathes]);
+}
