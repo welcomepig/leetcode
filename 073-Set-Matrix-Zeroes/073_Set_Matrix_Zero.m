@@ -1,158 +1,84 @@
 #import <Foundation/Foundation.h>
-#import <stdio.h>
 
-@interface DoubleArray : NSObject
-
-@property (nonatomic, assign) NSInteger row;
-@property (nonatomic, assign) NSInteger column;
-@property (nonatomic, strong) NSMutableArray *data;
-
--(void)addRow:(NSArray*)data;
--(void)setZeros;
--(void)setZerosCSpace;
-
-@end
-  
-@implementation DoubleArray
-
--(NSInteger)row
+void setMatrixZero(NSInteger **matrix, NSUInteger m, NSUInteger n)
 {
-    if (self.data) {
-        return self.data.count;
-    }
-    
-    return 0;
-}
-
--(NSInteger)column
-{
-    if (self.data && self.data.count > 0) {
-        return ((NSMutableArray*)self.data[0]).count;
-    }
-    
-    return 0;
-}
-    
--(void)addRow:(NSArray*)data
-{
-    if (!self.data) {
-        self.data = [NSMutableArray array];
-    }
-    [self.data addObject:[data mutableCopy]];
-}
-
-/* O(m * n) time O(m + n) space */
--(void)setZeros
-{
+    BOOL shouldSetFirstRowZero = NO;
     NSInteger i, j;
-    NSMutableSet *zeroRow = [NSMutableSet set];
-    NSMutableSet *zeroColumn = [NSMutableSet set];
     
-    NSMutableArray *rowData;
+    for (j = 0;j < n; j++) {
+        if (matrix[0][j] == 0) {
+            shouldSetFirstRowZero = YES;
+            break;
+        }
+    }
     
-    for (i = 0;i < self.row; i++) {
-        rowData = (NSMutableArray*)self.data[i];
-        for (j = 0;j < self.column; j++) {
-            if ([(NSNumber*)rowData[j] intValue] == 0) {
-                [zeroRow addObject:@(i)];
-                [zeroColumn addObject:@(j)];
+    for (i = 1;i < m; i++) {
+        for (j = 0;j < n; j++) {
+            if (matrix[i][j] == 0) {
+                matrix[i][0] = 0;
+                matrix[0][j] = 0;
             }
         }
     }
     
-    for (NSObject *row in zeroRow) {
-        rowData = (NSMutableArray*)self.data[[(NSNumber*)row intValue]];
-        for (j = 0;j < self.column; j++) {
-            rowData[j] = @(0);
-        }
-    }
-    
-    for (NSObject *column in zeroColumn) {
-        for (i = 0;i < self.row; i++) {
-            rowData = (NSMutableArray*)self.data[i];
-            rowData[[(NSNumber*)column intValue]] = @(0);
-        }
-    }
-}
-
-/* O(m * n) time O(1) space */
--(void)setZerosCSpace
-{
-    NSInteger i, j;
-    NSInteger row0 = 1, col0 = 1;
-    NSMutableArray *rowData, *rowData2;
-    
-    for (i = 0;i < self.row; i++) {
-        rowData = (NSMutableArray*)self.data[i];
-        if ([(NSNumber*)rowData[0] intValue] == 0) {
-            col0 = 0;
-        }
-        for (j = 0;j < self.column; j++) {
-            if ([(NSNumber*)rowData[j] intValue] == 0) {
-                if (i == 0) row0 = 0;
-                if (j == 0) col0 = 0;
-                
-                rowData[0] = @(0);
-                rowData2 = (NSMutableArray*)self.data[0];
-                rowData2[j] = @(0);
+    for (i = 1;i < m; i++) {
+        if (matrix[i][0] == 0) {
+            for (j = 1;j < n; j++) {
+                matrix[i][j] = 0;
             }
         }
     }
     
-    for (i = 1;i < self.row; i++) {
-        rowData = (NSMutableArray*)self.data[i];
-        for (j = 1;j < self.column; j++) {
-            rowData2 = (NSMutableArray*)self.data[0];
-            if ([(NSNumber*)rowData[0] intValue] == 0 || 
-                [(NSNumber*)rowData2[j] intValue] == 0) {
-                rowData[j] = @(0);
+    for (j = 1;j < n; j++) {
+        if (matrix[0][j] == 0) {
+            for (i = 1;i < m; i++) {
+                matrix[i][j] = 0;
             }
         }
     }
     
-    if (row0 == 0) {
-        rowData = (NSMutableArray*)self.data[0];
-        for (j = 0;j < self.column; j++) {
-            rowData[j] = @(0);
+    if (matrix[0][0] == 0) {
+        for (i = 1;i < m; i++) {
+            matrix[i][0] = 0;
         }
     }
     
-    if (col0 == 0) {
-        for (i = 0;i < self.row; i++) {
-            rowData2 = (NSMutableArray*)self.data[i];
-            rowData2[0] = @(0);
+    if (shouldSetFirstRowZero) {
+        for (j = 0;j < n; j++) {
+            matrix[0][j] = 0;
         }
     }
 }
 
--(NSString*)description
-{
-    NSMutableString *desc = [NSMutableString string];
+int main(int argc, char * argv[]) {
+    NSInteger row = 3, column = 4;
     
-    for (NSInteger i = 0;i < self.row; i++) {
-        NSMutableArray *rowData = (NSMutableArray*)self.data[i];
-        for (NSInteger j = 0;j < self.column; j++) {
-            [desc appendFormat:@"%ld ", [(NSNumber*)rowData[j] intValue]];
+    NSInteger **data = (NSInteger **)malloc(row * sizeof(NSInteger*));
+    for (int i = 0;i < row; i++) {
+        data[i] = (NSInteger *)malloc(column * sizeof(NSInteger));
+    }
+    
+    data[0][0] = 0;
+    data[0][1] = 1;
+    data[0][2] = 3;
+    data[0][3] = 4;
+    
+    data[1][0] = 1;
+    data[1][1] = 1;
+    data[1][2] = 3;
+    data[1][3] = 4;
+    
+    data[2][0] = 0;
+    data[2][1] = 1;
+    data[2][2] = 3;
+    data[2][3] = 4;
+    
+    setMatrixZero(data, row, column);
+    
+    for (int i = 0;i < row; i++) {
+        for (int j = 0;j < column; j++) {
+            NSLog(@"%ld ", data[i][j]);
         }
-        [desc appendFormat:@"\n"];
-    }
-    
-    return [desc copy];
-}
-
-@end
-
-
-int main (int argc, const char * argv[])
-{
-    @autoreleasepool {
-        DoubleArray *data = [[DoubleArray alloc] init];
-        [data addRow:@[@(1), @(1), @(3), @(4)]];
-        [data addRow:@[@(1), @(1), @(3), @(4)]];
-        [data addRow:@[@(0), @(1), @(3), @(4)]];
-        NSLog(@"%@", data);
-        [data setZerosCSpace];
-        NSLog(@"%@", data);
+        NSLog(@"\n");
     }
 }
-
