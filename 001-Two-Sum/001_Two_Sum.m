@@ -1,91 +1,71 @@
 #import <Foundation/Foundation.h>
-#import <stdio.h>
 
 @interface NSArray (TwoSum)
 
-- (bool)hasTwoSum:(int)target;
-    
+- (BOOL)hasTwoSumNoSpace:(NSInteger)target;
+- (NSArray*)twoSumNoSpace:(NSInteger)target;
+- (NSArray*)twoSum:(NSInteger)target;
+
 @end
 
-    
 @implementation NSArray (TwoSum)
-    
-- (bool)hasTwoSum:(int)target
-{
-    NSMutableDictionary *hash = [NSMutableDictionary dictionary];
-    
-    for (NSObject* data in self) {
-        if ([data isKindOfClass:[NSNumber class]]) {
-            int value = [(NSNumber*)data intValue];
-            int value_to_find = target - value;
 
-            if ([hash objectForKey:@(value_to_find)]) {
-                return true;
-            }
-            
-            hash[@(value)] = @(true);
-        }
-    }
-    
-    return false;
-}
-
-- (bool)hasTwoSumNoSpace:(int)target
+- (BOOL)hasTwoSumNoSpace:(NSInteger)target
 {
+    NSInteger i, j;
     NSArray *sorted = [self sortedArrayUsingSelector:@selector(compare:)];
-    NSLog(@"sorted = %@", sorted);
-    int i = 0;
-    int j = self.count - 1;
     
+    i = 0;
+    j = self.count - 1;
     while (i < j) {
-        if (![self[i] isKindOfClass:[NSNumber class]]) {
+        if ([self[i] integerValue] + [self[j] integerValue] == target) return YES;
+        if ([self[i] integerValue] + [self[j] integerValue] < target) {
             i++;
-            continue;
-        }
-        if (![self[j] isKindOfClass:[NSNumber class]]) {
+        } else {
             j--;
-            continue;
         }
-        
-        int value = [(NSNumber*)self[i] intValue];
-        int value_to_find = target - value;
-        if (value_to_find == [(NSNumber*)self[j] intValue]) {
-            return true;
-        }
-        i++;
-        j--;
     }
     
-    return false;
+    return NO;
 }
 
--(NSArray*)twoSum:(NSInteger)target
+- (NSArray*)twoSumNoSpace:(NSInteger)target
 {
-    NSInteger i, valueToFind;
-    NSMutableDictionary *map = [NSMutableDictionary dictionary];
+    NSInteger target_to_find;
     
-    for (i = 0;i < self.count; i++) {
-        valueToFind = target - [self[i] integerValue];
-        if (map[@(valueToFind)]) {
-            return @[map[@(valueToFind)], @(i)];
+    for (NSInteger i = 0;i < self.count; i++) {
+        target_to_find = target - [self[i] integerValue];
+        for (NSInteger j = 0;j < self.count; j++) {
+            if ([self[j] integerValue] == target_to_find) {
+                return @[@(i), @(j)];
+            }
         }
-        [map setValue:@(i) forKey:self[i]];
     }
     
-    return nil;
+    return @[];
+}
+
+- (NSArray*)twoSum:(NSInteger)target
+{
+    NSMutableDictionary *map = [NSMutableDictionary dictionary];
+    NSNumber *target_to_find;
+    
+    for (NSInteger i = 0;i < self.count; i++) {
+        target_to_find = @(target - [self[i] integerValue]);
+        if (map[target_to_find]) {
+            return @[map[target_to_find], @(i)];
+        }
+        map[self[i]] = @(i);
+    }
+    
+    return @[];
 }
 
 @end
 
-int main (int argc, const char * argv[])
-{
-    @autoreleasepool {
-        NSArray *data = [NSArray arrayWithObjects:@(1), @(-1), @(5), @(4), @(6), nil];
-        bool result = [data hasTwoSum:7];
-        NSLog(@"result = %d", result);
-        
-        bool result2 = [data hasTwoSumNoSpace:4];
-        NSLog(@"result2 = %d", result2);
-    }
+int main(int argc, char * argv[]) {
+    NSArray *data = @[@(1), @(-1), @(5), @(4), @(6)];
+    NSLog(@"hasTwoSumNoSpace = %d", [data hasTwoSumNoSpace:7]);
+    NSLog(@"twoSumNoSpace = %@", [data twoSumNoSpace:7]);
+    NSLog(@"twoSum = %@", [data twoSum:7]);
 }
-
