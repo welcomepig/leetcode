@@ -1,37 +1,38 @@
 #import <Foundation/Foundation.h>
 
-@interface NSString (IsValidParenthese)
-
-- (BOOL)isValidParenthese;
-
-@end
-
-@implementation NSString (IsValidParenthese)
-
-- (BOOL)isValidParenthese {
+BOOL isValidParentheses(NSString *s) {
     NSMutableArray *stack = [NSMutableArray array];
-    NSDictionary *map = @{ @('(') : @(')'), @('[') : @(']'), @('{') : @('}') };
-    
-    for (NSUInteger i = 0;i < self.length; i++) {
-        char value = [self characterAtIndex:i];
-        
-        if (value == '(' || value == '[' || value == '{') {
-            [stack addObject:map[@(value)]];
-        } else if (value == ')' || value == ']' || value == '}') {
-            if ([[stack lastObject] charValue] != value) {
-                return NO;
-            }
+
+    for (NSUInteger i = 0;i < s.length; i++) {
+        char c = [s characterAtIndex:i];
+        switch (c) {
+        case '(':
+            [stack addObject:@(')')];
+            break;
+        case '[':
+            [stack addObject:@(']')];
+            break;
+        case '{':
+            [stack addObject:@('}')];
+            break;
+        case ')':
+        case ']':
+        case '}':
+            if (stack.count == 0 || [stack.lastObject charValue] != c) return NO;
             [stack removeLastObject];
+            break;
         }
     }
     
     return (stack.count == 0);
 }
 
-@end
-
 int main(int argc, char * argv[]) {
-    NSString *s = @"(()";
-    NSLog(@"%d", [s isValidParenthese]);
+    @autoreleasepool {
+        NSLog(@"%d", isValidParentheses(@"(()"));
+        NSLog(@"%d", isValidParentheses(@"[()]"));
+        NSLog(@"%d", isValidParentheses(@"{}()[]"));
+        NSLog(@"%d", isValidParentheses(@"({)}"));
+    }
 }
 
